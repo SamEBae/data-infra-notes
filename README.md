@@ -93,19 +93,29 @@ https://www.elastic.co/products/beats/filebeat
 
 - aggregated "tail -f" as a service.
 - automatically rate-limits itself. if Logstash is busy crunching data, file beat slows down its read until congestion is resolved.
+- cannot send Filebeat output to AWS SQS
+
+- [Filebeat directly to ElasticSearch without Logstash](https://aws.amazon.com/blogs/database/ek-is-the-new-elk-simplify-log-analytics-by-transforming-data-natively-in-amazon-elasticsearch-service/)
 
 ### Logstash:
+- Transformer: E[T]L
 - requires JVM
-- Transformer E[T]L
+
 
 #### Deserialization:
-- codecs can be used to transform data: https://www.elastic.co/guide/en/logstash/current/data-deserialization.html
-e.g. avro, csv
+- codecs can be used to deserialize data into Logstash events: https://www.elastic.co/guide/en/logstash/current/data-deserialization.html
+e.g. avro, csv, xml, protobuf
+
+**con**: for protobuf codec, requires the protobuf definitions to be compiled as Ruby file.
 
 
 ## Batch Processing:
 
 ## Stream Processing:
+
+### Kafka:
+
+[Best practices for running Kafka on AWS](https://aws.amazon.com/blogs/big-data/best-practices-for-running-apache-kafka-on-aws/)
 
 
 ### Lambda:
@@ -146,14 +156,34 @@ SELECT pg_cancel_backend(pid); -- pid is INT
 ## Workflow:
 
 
-### Apache Airflow:
+### Airflow:
 
+**airflow trigger_dag execution_date is the next day**:
+https://stackoverflow.com/questions/39612488/airflow-trigger-dag-execution-date-is-the-next-day-why
+
+tl;dr because that's how cron-like schedulers are implemented.
+
+#### Sensors:
 
 ### AWS Data Pipeline:
+- a great starting point for small data engineering teams running on AWS stack
 
+in my personal experience, a much worse Apache Airflow :) (at scale!)
 
 
 ---
 
 ## Glossary of Acronyms I use:
 - SYS: System
+
+
+### Other notes:
+
+These notes can be biased since I work with the following stack:
+- AWS (platform)
+- AWS RDS (database)
+- gRPC
+- protocol buffers
+
+
+
