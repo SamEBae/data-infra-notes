@@ -114,8 +114,107 @@ e.g. avro, csv, xml, protobuf
 ## Stream Processing:
 
 ### Kafka:
+"distributed commit log" and "distribtued streaming platform".
+
+#### Kafka terms:
+
+**Message**: 
+- unit of data within Kafka
+- analogous to a row in a database
+- Type: byte array
+
+**Key**:
+- Optional metadata 
+- used when messages are to be written to paritions in a more controlled manner
+- Type: byte array
+
+
+**Batch**:
+- Collection of messages with same topic and partition
+- Messages are written into Kafka in batches
+- Typically compressed more more efficient data transfer
+
+
+Kafka developers favor Apache Avro serialization:
+- orginally developed for Hadoop
+
+
+**Topic**:
+- has multiple partitions
+- analogous to a table in a database
+
+**Partition**:
+- provides redudancy and scalability
+- messages are written to a partition in a append-only fashion
+- each partition can be hosted on a different server. Single topic can horizontally scale across multiple servers.
+
+
+**Producers**:
+- create new messages to a topic
+- producer can direct messages to specific partitions using message key and partitioner hashing the key and mapping the result of the hash.
+
+
+**Consumers**:
+- reads new messages from a topic
+- keeps track of which messages it has already consumed using an offset.
+- offset <int> is a counter that Kafka increments as message is produced.  Each message has a unique offset. offset allows consumer to stop/restart w/o losing its place. 
+- work as part of **consumer group**, one or more consumers that work together for a topic. 
+- Consumer group allows consumers to horizontally scale.
+
+**Broker**:
+- a single Kafka server
+- a single broker cacn easily handle thousands of paritions and millions of messages per second
+
+Broker steps:
+- receives messages from producers
+- assigns offsets
+- commits messages to storage on disk
+- services consumers: respond to fetch requests for paritions
+
+
+**Kafka Cluster**:
+- group of Kafka brokers
+- one broker functions as **cluster controller** and is responsible for: assigning partitions to brokers and monitoring for broker failures.
+
+
+**Kafka retention**:
+- durable storage of message 
+- can set a limit for time (10 days) and size (e.g. 1TB)
+- once limit is reached, messages expire and are deleted
+
+
+#### Kafka Reliability Gaurantees
+- order guarentee: if message B was written after message A, consumers read message B after message A.
+- produced messages are "committed" when written to the partion on all in-sync replicas.
+- messages that are committed will not be lost as long as at least one replica remains alive
+- consumers cacn only read messages that are committed
+
+
+##### Replication:
+
+a replica is in-sync if it is the leader for a partition or follower that:
+- has an active sesion with Zookeeper
+- Feteched messages from the leader in the last 10 seconds (configurable)
+- fetched most recent messages from the leader in the last 10 seconds. 
+
+If a replica loses connection to Zookeepr, stops fetching new messages, or falls behind and can't catch up within 10 seconds, the replica is out-of-sync.
+
+- can set `default.replication.factor`, default value is 3. 3 is usually enough; some banks are known to run critical topics with 5 replicas.
+
+
+When leader for a partition is no longer available, one of the in-sync replicas is chosen as the new leader.
+- no loss of comitted data occurs during this leader selection.
+
+
+
+
+
+
+#### Running Kakfka on AWS:
 
 [Best practices for running Kafka on AWS](https://aws.amazon.com/blogs/big-data/best-practices-for-running-apache-kafka-on-aws/)
+
+
 
 
 ### Lambda:
@@ -179,7 +278,7 @@ in my personal experience, a much worse Apache Airflow :) (at scale!)
 
 ### Other notes:
 
-These notes can be biased since I work with the following stack:
+I work with the following stacks:
 - AWS (platform)
 - AWS RDS (database)
 - gRPC
