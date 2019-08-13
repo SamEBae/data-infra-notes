@@ -1,4 +1,5 @@
 import logging
+import time
 
 logger = logging.getLogger('simple_example')
 logger.setLevel(logging.INFO)
@@ -20,3 +21,13 @@ logger.addHandler(fh)
 # 'application' code
 # logger.debug('debug message')
 logger.info('info message')
+counter = 0
+
+while True:
+	logger.info('info message')
+	time.sleep(0.01)
+
+	counter += 1
+
+	if counter == 100000:
+		break
