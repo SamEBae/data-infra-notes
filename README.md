@@ -239,9 +239,14 @@ WHERE state not like 'idle%' AND  query NOT ILIKE '%pg_stat_activity%'
 ORDER BY query_start desc;
 ```
 
-Cancel a running query:
+Cancel a running query (soft cancel):
 ```SQL
-SELECT pg_cancel_backend(pid); -- pid is INT
+SELECT pg_cancel_backend(pid); -- pid (process id)
+```
+
+Cancel a running query (hard cancel; usually when idle deadlock.
+```SQL
+SELECT pg_terminate_backend(pid); -- pid (process id)
 ```
 
 
