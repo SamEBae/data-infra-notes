@@ -34,5 +34,11 @@ SELECT pg_terminate_backend(pid); -- pid (process id)
 ### Postgres Vacuum
 
 
-
 ### Postgres Permissions
+
+Create a schema and grant it on a user/role (but ensures you're the owner so you can delete it after) so they can do anything on it (e.g. CREATE/DELETE/ALTER TABLE etc.)
+
+```SQL 
+CREATE SCHEMA <schema name>;
+GRANT ALL PRIVILEGES ON SCHEMA <schema name> TO <user/role>;
+```
