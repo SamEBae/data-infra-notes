@@ -44,7 +44,8 @@ GRANT ALL PRIVILEGES ON SCHEMA <schema name> TO <user/role>;
 ```
 
 #### Create Read-Only User and Grant it on all schemas
-```
+
+```SQL
 -- Create a group
 CREATE ROLE read_access;
 
