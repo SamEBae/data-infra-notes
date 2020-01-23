@@ -91,5 +91,5 @@ INNER JOIN pg_language pl on (pp.prolang = pl.oid)
 WHERE pl.lanname NOT IN ('c','internal') 
    AND pn.nspname NOT LIKE 'pg_%'
    AND pn.nspname <> 'information_schema'
-   AND pp.proname='upsert_table_from_query';
+   AND pp.proname='<name>';
 ```
