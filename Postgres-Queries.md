@@ -42,3 +42,23 @@ Create a schema and grant it on a user/role (but ensures you're the owner so you
 CREATE SCHEMA <schema name>;
 GRANT ALL PRIVILEGES ON SCHEMA <schema name> TO <user/role>;
 ```
+
+
+### Postgres Functions
+
+View user defined functions and procedures:
+
+```SQL
+SELECT 
+    pp.proname,
+    pl.lanname,
+    pn.nspname,
+    pg_get_functiondef(pp.oid)
+FROM pg_proc pp
+INNER JOIN pg_namespace pn on (pp.pronamespace = pn.oid)
+INNER JOIN pg_language pl on (pp.prolang = pl.oid)
+WHERE pl.lanname NOT IN ('c','internal') 
+   AND pn.nspname NOT LIKE 'pg_%'
+   AND pn.nspname <> 'information_schema'
+   AND pp.proname='upsert_table_from_query';
+```
