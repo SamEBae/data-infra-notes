@@ -43,6 +43,36 @@ CREATE SCHEMA <schema name>;
 GRANT ALL PRIVILEGES ON SCHEMA <schema name> TO <user/role>;
 ```
 
+#### Create Read-Only User and Grant it on all schemas
+```
+-- Create a group
+CREATE ROLE read_access;
+
+-- Create a read_only_user with that role
+CREATE USER read_only_user WITH PASSWORD 'elephants';
+GRANT read_access TO read_only_user;
+
+-- Loop and grant access
+DO $$
+DECLARE
+   grant_query text;
+BEGIN
+    FOR grant_query IN
+        SELECT
+            'REVOKE ALL ON SCHEMA ' || nspname || ' FROM read_access; '
+            || 'GRANT ALL PRIVILEGES ON SCHEMA ' || nspname || ' TO read_access;'
+            || 'GRANT SELECT ON ALL TABLES IN SCHEMA ' || nspname || ' TO read_access; '
+            || 'ALTER DEFAULT PRIVILEGES IN SCHEMA '|| nspname || ' GRANT SELECT ON TABLES TO read_access;'
+        FROM pg_catalog.pg_namespace
+        WHERE nspname NOT LIKE 'pg_%' AND nspname!='information_schema' ORDER BY 1 DESC
+    LOOP
+    	RAISE NOTICE '%', grant_query;
+        EXECUTE grant_query;
+    END LOOP;
+END
+$$;
+```
+
 
 ### Postgres Functions
 
